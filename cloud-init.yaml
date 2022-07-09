@@ -1,0 +1,20 @@
+#cloud-config
+yum_repos:
+    epel-testing:
+        baseurl: https://yum.oracle.com/repo/OracleLinux/OL7/developer_EPEL/$basearch/
+        enabled: true
+        failovermethod: priority
+        gpgcheck: true
+        gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+        name: EPEL ($basearch)
+
+packages:
+  - httpd
+
+runcmd:
+  - [sh, -c, echo "<html><h1>Web Server IP `hostname --ip-address`</h1></html>" > /var/www/html/index.html]
+  - [firewall-offline-cmd, --add-service=https]
+  - [firewall-offline-cmd, --add-service=http]
+  - [systemctl, enable, httpd]
+  - [systemctl, start, httpd]
+  - [systemctl, restart, firewalld]
